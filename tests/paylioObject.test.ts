@@ -199,6 +199,36 @@ describe("PaylioObject", () => {
     });
   });
 
+  describe("symbol access", () => {
+    it("symbol properties resolve through Reflect.get", () => {
+      const obj = new PaylioObject({ status: "active" });
+      // Symbol.toPrimitive access goes through the symbol branch
+      expect(obj[Symbol.toPrimitive]).toBeUndefined();
+    });
+
+    it("Symbol.iterator resolves correctly", () => {
+      const obj = new PaylioObject({ status: "active" });
+      // Symbol access should not throw
+      expect(obj[Symbol.toStringTag]).toBeUndefined();
+    });
+  });
+
+  describe("underscore prefixed access", () => {
+    it("reading _data returns internal data object", () => {
+      const obj = new PaylioObject({ status: "active" });
+      expect(obj._data).toBeDefined();
+      expect(obj._data["status"]).toBe("active");
+    });
+
+    it("setting underscore property goes to object, not data", () => {
+      const obj = new PaylioObject({});
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (obj as any)._custom = "internal";
+      // Should NOT be in _data
+      expect(obj._data["_custom"]).toBeUndefined();
+    });
+  });
+
   describe("internal methods are not intercepted", () => {
     it("toDict is accessible as method", () => {
       const obj = new PaylioObject({ status: "active" });

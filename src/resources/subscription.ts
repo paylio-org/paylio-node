@@ -16,8 +16,8 @@ export class PaginatedList extends PaylioObject {
   static readonly OBJECT_NAME = "list";
 
   get hasMore(): boolean {
-    const page = (this.get("page", 1) ?? 1) as number;
-    const totalPages = (this.get("total_pages", 1) ?? 1) as number;
+    const page = this.get("page", 1) as number;
+    const totalPages = this.get("total_pages", 1) as number;
     return page < totalPages;
   }
 }

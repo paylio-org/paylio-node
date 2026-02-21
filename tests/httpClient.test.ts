@@ -277,6 +277,44 @@ describe("HTTPClient", () => {
     });
   });
 
+  describe("error format edge cases", () => {
+    it("error object with non-string code defaults code to undefined", async () => {
+      mockFetch.mockResolvedValueOnce(
+        makeResponse(400, '{"error":{"code":123,"message":"bad"}}'),
+      );
+      try {
+        await client.request("GET", "/test");
+      } catch (e) {
+        const err = e as InvalidRequestError;
+        expect(err.code).toBeUndefined();
+        expect(err.message).toBe("bad");
+      }
+    });
+
+    it("error object with non-string message falls back to httpBody", async () => {
+      const body = '{"error":{"code":"c","message":123}}';
+      mockFetch.mockResolvedValueOnce(makeResponse(400, body));
+      try {
+        await client.request("GET", "/test");
+      } catch (e) {
+        const err = e as InvalidRequestError;
+        expect(err.message).toBe(body);
+        expect(err.code).toBe("c");
+      }
+    });
+
+    it("wraps non-Error thrown from fetch", async () => {
+      mockFetch.mockRejectedValueOnce("string error");
+      try {
+        await client.request("GET", "/test");
+      } catch (e) {
+        const err = e as APIConnectionError;
+        expect(err).toBeInstanceOf(APIConnectionError);
+        expect(err.message).toContain("string error");
+      }
+    });
+  });
+
   describe("defaults", () => {
     it("default base URL is correct", () => {
       expect(DEFAULT_BASE_URL).toBe("https://api.paylio.pro/flying/v1");
@@ -284,6 +322,19 @@ describe("HTTPClient", () => {
 
     it("default timeout is 30 seconds", () => {
       expect(DEFAULT_TIMEOUT).toBe(30_000);
+    });
+
+    it("uses globalThis.fetch when no fetchFn provided", () => {
+      // Just verify the constructor doesn't throw when no fetchFn
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = vi.fn();
+      try {
+        const c = new HTTPClient({ apiKey: "sk_test" });
+        expect(c).toBeInstanceOf(HTTPClient);
+        c.close();
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
     });
   });
 
