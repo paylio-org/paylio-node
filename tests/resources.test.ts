@@ -17,7 +17,6 @@ describe("Subscription", () => {
     expect(Subscription.OBJECT_NAME).toBe("subscription");
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   it("supports dot access", () => {
     const sub = new Subscription({ id: "sub_1", status: "active" });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

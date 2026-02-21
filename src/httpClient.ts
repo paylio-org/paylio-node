@@ -120,7 +120,8 @@ export class HTTPClient {
       if (err && typeof err === "object" && !Array.isArray(err)) {
         const errObj = err as Record<string, unknown>;
         errorCode = typeof errObj["code"] === "string" ? errObj["code"] : undefined;
-        errorMessage = typeof errObj["message"] === "string" ? (errObj["message"] as string) : httpBody;
+        errorMessage =
+          typeof errObj["message"] === "string" ? (errObj["message"] as string) : httpBody;
       } else if (typeof err === "string") {
         errorMessage = err;
       } else if (typeof jsonBody["detail"] === "string") {

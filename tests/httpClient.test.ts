@@ -64,18 +64,11 @@ describe("HTTPClient", () => {
     it("throws APIError for non-JSON success body", async () => {
       mockFetch.mockResolvedValueOnce(new Response("not json", { status: 200 }));
       await expect(client.request("GET", "/test")).rejects.toThrow(APIError);
-      try {
-        await client.request("GET", "/test");
-      } catch (e) {
-        // fetch already consumed, but the error structure is tested above
-      }
     });
 
     it("includes correct message for non-JSON success", async () => {
       mockFetch.mockResolvedValueOnce(new Response("not json", { status: 200 }));
-      await expect(client.request("GET", "/test")).rejects.toThrow(
-        "Invalid JSON in response body",
-      );
+      await expect(client.request("GET", "/test")).rejects.toThrow("Invalid JSON in response body");
     });
   });
 
@@ -279,9 +272,7 @@ describe("HTTPClient", () => {
 
   describe("error format edge cases", () => {
     it("error object with non-string code defaults code to undefined", async () => {
-      mockFetch.mockResolvedValueOnce(
-        makeResponse(400, '{"error":{"code":123,"message":"bad"}}'),
-      );
+      mockFetch.mockResolvedValueOnce(makeResponse(400, '{"error":{"code":123,"message":"bad"}}'));
       try {
         await client.request("GET", "/test");
       } catch (e) {
