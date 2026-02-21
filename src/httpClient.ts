@@ -79,6 +79,7 @@ export class HTTPClient {
       "Content-Type": "application/json",
       Accept: "application/json",
       "User-Agent": `paylio-node/${VERSION}`,
+      "X-SDK-Source": "node",
     };
   }
 

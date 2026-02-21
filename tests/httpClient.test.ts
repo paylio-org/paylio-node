@@ -52,6 +52,13 @@ describe("HTTPClient", () => {
       expect(init.headers["Content-Type"]).toBe("application/json");
       expect(init.headers["Accept"]).toBe("application/json");
     });
+
+    it("sends X-SDK-Source header", async () => {
+      mockFetch.mockResolvedValueOnce(makeResponse(200, '{"ok":true}'));
+      await client.request("GET", "/test");
+      const [, init] = mockFetch.mock.calls[0];
+      expect(init.headers["X-SDK-Source"]).toBe("node");
+    });
   });
 
   describe("success responses", () => {
