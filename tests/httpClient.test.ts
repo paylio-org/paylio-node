@@ -224,6 +224,26 @@ describe("HTTPClient", () => {
         expect(err.message).toContain("timed out");
       }
     });
+
+    it("fires setTimeout callback that aborts the request", async () => {
+      vi.useFakeTimers();
+      const fetchThatHangs = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
+        return new Promise((_resolve, reject) => {
+          init.signal?.addEventListener("abort", () => {
+            reject(new DOMException("The operation was aborted", "AbortError"));
+          });
+        });
+      });
+      const shortClient = new HTTPClient({
+        apiKey: "sk_test",
+        timeout: 100,
+        fetchFn: fetchThatHangs,
+      });
+      const promise = shortClient.request("GET", "/test");
+      vi.advanceTimersByTime(200);
+      await expect(promise).rejects.toThrow(APIConnectionError);
+      vi.useRealTimers();
+    });
   });
 
   describe("request building", () => {
