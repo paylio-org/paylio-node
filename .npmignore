@@ -1,0 +1,12 @@
+src/
+tests/
+.github/
+eslint.config.*
+.prettierrc
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+coverage/
+.env
+.env.*
+CLAUDE.md
