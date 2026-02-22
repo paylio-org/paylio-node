@@ -1,6 +1,6 @@
 {
   "name": "paylio",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Node.js/TypeScript client library for the Paylio API",
   "type": "module",
   "exports": {
